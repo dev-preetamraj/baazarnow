@@ -1,0 +1,125 @@
+{% extends 'supplier/base.html' %}
+{% load static %}
+{% block supplier_title %}{% endblock %}
+{% block supplier %}
+<header class="bg-white shadow-sm px-4 py-3 z-index-20">
+    <div class="container-fluid px-0">
+        <h2 class="mb-0 p-1">Add Product</h2>
+    </div>
+</header>
+<!-- Breadcrumb-->
+<div class="bg-white">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 py-3">
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'supplier_index' %}">Home</a></li>
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'manage_products' %}">Manage Products</a></li>
+                <li class="breadcrumb-item active fw-light" aria-current="page">Add Product</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<section class="manage_products">
+    <div class="container-fluid">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h4 mb-0">Add Products</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="form-horizontal">
+                        {% csrf_token %}
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Product Name</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="product_name" type="text">
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Product Brand</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="product_brand" type="text">
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Product Image</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="product_image" type="file">
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Product Price</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="price" type="number" min=0 step=0.01>
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Discounted Price</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="discounted_price" type="number" min=0 step=0.01>
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Over what quantity, you want to give special discount to Retailers?</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="quantity_over_bulk_discount" type="number" min=0 step=1>
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Percentage(%) discount over that quantity</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="percent_discount_over_bulk" type="number" min=0 step=0.01>
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Product Quantity (if applicable)</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="quantity" type="number" min="0">
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Weight of each Product in gms/ml (if applicable)</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="each_weight_in_grams" type="number" min=0 step=0.1>
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <label class="col-sm-3 form-label">Product Category</label>
+                            <div class="col-sm-9">
+                                <select name="product_category" class="form-control">
+                                    <option value="" selected>Choose...</option>
+                                    <option value="Grocery">Grocery</option>
+                                    <option value="Garments">Garments</option>
+                                    <option value="Cosmetics">Cosmetics</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Stationery">Stationery</option>
+                                    <option value="Musical">Musical</option>
+                                    <option value="Pharmacy">Pharmacy</option>
+                                    <option value="Furniture">Furniture</option>
+                                    <option value="Sports">Sports</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="border-bottom my-3 border-gray-200"></div>
+                        <div class="row">
+                            <div class="col-sm-9 ms-auto">
+                              <a class="btn btn-secondary" href="{% url 'manage_products' %}">Cancel</a>
+                              <button class="btn btn-primary" type="submit">Add Product</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

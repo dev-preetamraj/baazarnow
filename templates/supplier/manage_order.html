@@ -1,0 +1,147 @@
+{% extends 'supplier/base.html' %}
+{% load static %}
+{% block supplier_title %}{% endblock %}
+{% block supplier %}
+<header class="bg-white shadow-sm px-4 py-3 z-index-20">
+    <div class="container-fluid px-0">
+        <h2 class="mb-0 p-1">Manage Order</h2>
+    </div>
+</header>
+
+<!-- Breadcrumb-->
+<div class="bg-white">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 py-3">
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'supplier_index' %}">Home</a></li>
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'order_received' %}">Received Orders</a></li>
+                <li class="breadcrumb-item active fw-light" aria-current="page">Manage Order</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="manage_products">
+    <div class="container-fluid">
+        <div class="card-body">
+            <div class="table-responsive" style="display:flex; justify-content: center;">
+                <table
+                    class="table mb-0 table-striped table-hover"
+                    style="max-width: 70%; padding-left: 5px; padding-right: 5px;"
+                >
+                <tbody>
+                    <tr>
+                        <th>Product:</th>
+                        <td>{{order_item.product.product_name}}</td>
+                    </tr>
+                    <tr>
+                        <th>Quantity:</th>
+                        <td>{{order_item.quantity}}</td>
+                    </tr>
+                    <tr>
+                        <th>Order By:</th>
+                        <td>{{order_item.order.customer.first_name}} {{order_item.order.customer.last_name}}</td>
+                    </tr>
+                    <tr>
+                        <th>Shipping Address:</th>
+                        <td>
+                            <div style="max-width: 50%;">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th>Address Line 1:</th>
+                                            <td>{{order_item.order.address.adrs_line_1}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Address Line 2:</th>
+                                            <td>{{order_item.order.address.adrs_line_2}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>City:</th>
+                                            <td>{{order_item.order.address.city}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>District:</th>
+                                            <td>{{order_item.order.address.district}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>State:</th>
+                                            <td>{{order_item.order.address.state}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Country:</th>
+                                            <td>{{order_item.order.address.country}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Postal Code:</th>
+                                            <td>{{order_item.order.address.postal_code}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Phone Number:</th>
+                                            <td>{{order_item.order.address.phone_number}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Transaction ID:</th>
+                        <td>{{order_item.order.transaction_id}}</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>
+                            {% if order_item.order_complete_status %}
+                            <span class="btn btn-outline-success btn-sm">Delivered</span>
+                            {% else %}
+                            <span class="btn btn-outline-warning btn-sm">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if not order_item.order_complete_status %}
+                    <tr>
+                        <th>Change Status:</th>
+                        <td>
+                            <button
+                                class="btn btn-outline-danger btn-sm"
+                                id="mo-change-status"
+                                data-order-item-id="{{order_item.id}}"
+                            >
+                                Mark as Complete
+                            </button>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block supplier_script %}
+<script>
+    $(document).ready(function(){
+        $('#mo-change-status').click((event) => {
+            var order_id = $('#mo-change-status').data('order-item-id')
+            data = JSON.stringify({
+                'order_id': order_id
+            })
+            $.ajax({
+                type: 'POST',
+                url: '/mark_order_item_complete/',
+                data: data,
+                success: function(data){
+                    alert('Response: ' + data);
+                    window.location.reload();
+                },
+                error: function(e){
+                    console.log(e);
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}

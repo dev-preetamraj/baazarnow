@@ -1,0 +1,65 @@
+{% extends 'supplier/base.html' %}
+{% load static %}
+{% block supplier_title %}{% endblock %}
+{% block supplier %}
+<header class="bg-white shadow-sm px-4 py-3 z-index-20">
+    <div class="container-fluid px-0">
+        <h2 class="mb-0 p-1">Received Orders</h2>
+    </div>
+</header>
+
+<!-- Breadcrumb-->
+<div class="bg-white">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 py-3">
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'supplier_index' %}">Home</a></li>
+                <li class="breadcrumb-item active fw-light" aria-current="page">Received Orders</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="manage_products">
+    <div class="container-fluid">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table mb-0 table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Order By</th>
+                        <th>Order Status</th>
+                        <th>Manage Order</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in final_order_items %}
+                    <tr>
+                        <th scope="row">{{forloop.counter}}</th>
+                        <td><a href="{% url 'product_detail_page' item.product.id %}">{{item.product.get_short_name}}</a></td>
+                        <td>{{item.quantity}}</td>
+                        <td>{{item.order.customer.first_name}} {{item.order.customer.last_name}}</td>
+                        <td>
+                            {% if item.order_complete_status %}
+                            <span class="btn btn-outline-success btn-sm">Completed</span>
+                            {% else %}
+                            <span class="btn btn-outline-warning btn-sm">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'manage_order' item.id %}" class="btn btn-primary btn-sm">Manage Order
+                                <i class="bi bi-arrow-right-circle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

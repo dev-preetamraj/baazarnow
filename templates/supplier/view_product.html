@@ -1,0 +1,107 @@
+{% extends 'supplier/base.html' %}
+{% load static %}
+{% block supplier_title %}{% endblock %}
+{% block supplier %}
+<header class="bg-white shadow-sm px-4 py-3 z-index-20">
+    <div class="container-fluid px-0">
+        <h2 class="mb-0 p-1">View Product</h2>
+    </div>
+</header>
+<!-- Breadcrumb-->
+<div class="bg-white">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 py-3">
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'supplier_index' %}">Home</a></li>
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'manage_products' %}">Manage Products</a></li>
+                <li class="breadcrumb-item active fw-light" aria-current="page">View Products</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<section class="manage_products">
+    <div class="container-fluid">
+        <div class="card-body">
+            <div class="filter">
+                <form method="GET">
+                    {{my_filter.form}}
+                    <button class="btn btn-primary" type="submit">Filter</button>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table class="table mb-0 table-striped table-hover text-center">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Brand</th>
+                        <th>Image</th>
+                        <th>Price</th>
+                        <th>Discounted Price</th>
+                        <th>Total Quantity</th>
+                        <th>Weight of each Item (gm)</th>
+                        <th>Category</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in products %}
+                    <tr>
+                        <th scope="row">{{forloop.counter}}</th>
+                        <td>{{item.product_name}}</td>
+                        <td>{{item.product_brand}}</td>
+                        <td>
+                            <a href="{{item.product_image.url}}" target="_blank">
+                                <img src="{{item.product_image.url}}" style="width: 30px; height: 30px;" alt="{{item.product_name}}">
+                            </a>
+                        </td>
+                        <td>{{item.price}}</td>
+                        <td>{{item.discounted_price}}</td>
+                        <td>{{item.quantity}}</td>
+                        <td>{{item.each_weight_in_grams}}</td>
+                        <td>{{item.product_category}}</td>
+                        <td><a href="{% url 'update_product' item.pk %}" class="btn btn-primary btn-sm">Update</a></td>
+                        <td><a href="{% url 'delete_product' item.pk %}" class="btn btn-danger btn-sm">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+            {% if product_count > 10 %}
+            <div class="d-flex flex-column m-auto pagination mt-5" style="align-items: center;">
+                <nav aria-level="Page navigation">
+                    <ul class="pagination pg-grey justify-content-center">
+                        {% if products.has_previous %}
+                        <li class="page-item">
+                            <a href="?{% if query %}q={{query}}&{% endif %}page={{products.previous_page_number}}" class="page-link">&laquo; Previous</a>
+                        </li>
+                        {% endif %}
+
+                        {% for i in products.paginator.page_range %}
+                            {% if products.number == i %}
+                                <li class="page-item active"><a href="" class="page-link">{{i}}</a></li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a href="?{% if query %}q={{query}}&{% endif %}page={{i}}" class="page-link">{{i}}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if products.has_next %}
+                        <li class="page-item">
+                            <a href="?{% if query %}q={{query}}&{% endif %}page={{products.next_page_number}}" class="page-link">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a href="?{% if query %}q={{query}}&{% endif %}page={{products.paginator.num_pages}}" class="page-link">Last &raquo;</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+        
+    </div>
+</section>
+{% endblock %}

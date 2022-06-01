@@ -1,0 +1,77 @@
+{% load static %}
+<nav class="side-navbar z-index-40">
+    <!-- Sidebar Header-->
+    <div class="sidebar-header d-flex align-items-center py-4 px-3"><img class="avatar shadow-0 img-fluid rounded-circle" src="{{ request.user.profile.profile_pic.url }}" alt="...">
+      <div class="ms-3 title">
+        <a href="{% url 'profile_view' %}">
+          <h1 class="h4 mb-2">{{request.user.first_name}} {{request.user.last_name}}</h1>
+        </a>
+        <p class="text-sm text-gray-500 fw-light mb-0 lh-1">@{{request.user.username}}</p>
+      </div>
+    </div>
+    <!-- Sidebar Navidation Menus-->
+    <span class="text-uppercase text-gray-400 text-xs letter-spacing-0 mx-3 px-2 heading">Main</span>
+    <ul class="list-unstyled py-4">
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="{% url 'consumer_index' %}">
+          <i class="bi bi-graph-up-arrow svg-icon svg-icon-sm me-xl-2"></i>
+          Home 
+        </a>
+      </li>
+      <li class="sidebar-item active">
+        <a class="sidebar-link" href="{% url 'dashboard' %}">
+          <i class="bi bi-graph-up-arrow svg-icon svg-icon-sm me-xl-2"></i>
+          Dashboard 
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="{% url 'manage_products' %}"> 
+          <i class="bi bi-box2-fill svg-icon svg-icon-sm me-xl-2"></i>Manage Products 
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="{% url 'profile_view' %}"> 
+          <i class="bi bi-box2-fill svg-icon svg-icon-sm me-xl-2"></i>Manage Profile 
+        </a>
+      </li>
+      <!-- <li class="sidebar-item"><a class="sidebar-link" href="charts.html"> 
+          <svg class="svg-icon svg-icon-sm svg-icon-heavy me-xl-2">
+            <use xlink:href="#sales-up-1"> </use>
+          </svg>Charts </a></li>
+      <li class="sidebar-item"><a class="sidebar-link" href="forms.html"> 
+          <svg class="svg-icon svg-icon-sm svg-icon-heavy me-xl-2">
+            <use xlink:href="#survey-1"> </use>
+          </svg>Forms </a></li>
+      <li class="sidebar-item"><a class="sidebar-link" href="#exampledropdownDropdown" data-bs-toggle="collapse"> 
+          <svg class="svg-icon svg-icon-sm svg-icon-heavy me-xl-2">
+            <use xlink:href="#browser-window-1"> </use>
+          </svg>Example dropdown </a>
+        <ul class="collapse list-unstyled " id="exampledropdownDropdown">
+          <li><a class="sidebar-link" href="#">Page</a></li>
+          <li><a class="sidebar-link" href="#">Page</a></li>
+          <li><a class="sidebar-link" href="#">Page</a></li>
+        </ul>
+      </li>
+      <li class="sidebar-item"><a class="sidebar-link" href="login.html"> 
+          <svg class="svg-icon svg-icon-sm svg-icon-heavy me-xl-2">
+            <use xlink:href="#disable-1"> </use>
+          </svg>Login page </a></li> -->
+    </ul><span class="text-uppercase text-gray-400 text-xs letter-spacing-0 mx-3 px-2 heading">Extras</span>
+    <ul class="list-unstyled py-4">
+      <!-- <li class="sidebar-item"> <a class="sidebar-link" href="#"> 
+          <svg class="svg-icon svg-icon-sm svg-icon-heavy me-xl-2">
+            <use xlink:href="#imac-screen-1"> </use>
+          </svg>Demo </a></li> -->
+    </ul>
+  </nav>
+
+{% block consumer_script %}
+<script>
+  $(document).ready(function(){
+    var activeurl = window.location.pathname;
+    console.log(activeurl)
+    
+    $("a[href='"+activeurl+"']").parent('li').addClass('active');
+  });
+</script>
+{% endblock %}

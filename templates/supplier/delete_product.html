@@ -1,0 +1,40 @@
+{% extends 'supplier/base.html' %}
+{% load static %}
+{% block supplier_title %}{% endblock %}
+{% block supplier %}
+<header class="bg-white shadow-sm px-4 py-3 z-index-20">
+    <div class="container-fluid px-0">
+        <h2 class="mb-0 p-1">Delete Product</h2>
+    </div>
+</header>
+<!-- Breadcrumb-->
+<div class="bg-white">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 py-3">
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'supplier_index' %}">Home</a></li>
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'manage_products' %}">Manage Products</a></li>
+                <li class="breadcrumb-item active fw-light" aria-current="page">Manage Products</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<section class="manage_products">
+    <div class="container-fluid">
+        <div class="card-header">
+            <p class="mb-0">Are you sure you want to <span style="color: red;">DELETE</span> "{{product.product_name}}"?</p>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-sm-9 ms-auto">
+                      <a class="btn btn-secondary" href="{% url 'manage_products' %}">Cancel</a>
+                      <button class="btn btn-danger" type="submit">Delete</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

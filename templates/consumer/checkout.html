@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <title>Checkout | baazarnow.com</title>
+  </head>
+  <body>
+    {% include 'base/navbar.html' %}
+    <div class="container my-3">
+        <div class="box-element">
+            <div>
+            <h5>Currently selected address...</h5>
+            {% if order.address == None %}
+            <span style="color: red;">Please add or select a address.</span>
+            {% else %}
+            <span id="current-address" style="color: red;">{{order.address.adrs_line_1}}, {{order.address.adrs_line_2}}, {{order.address.city}}.... Ph. No.: {{order.address.phone_number}}</span>
+            {% endif %}
+            </div>
+            <button class="btn btn-primary btn-sm mt-3" style="background: #796aee !important;" id="change-address-btn">Change Address</button>
+        </div><hr>
+        <div class="row">
+            <div class="col-lg-6" hidden id="co-address">
+                <div class="box-element" id="form-wrapper">
+                    <h5>Add new address...</h5>
+                    <form method="POST" class="form-group" id="add-address-form" style="max-width: 70%;">
+                        <div>
+                            <label for="adrs_line_1">Address Line 1 <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" name="adrs_line_1" id="check_adrs_line_1">
+                        </div>
+                        <div>
+                            <label for="adrs_line_2">Address Line 2</label>
+                            <input type="text" class="form-control" name="adrs_line_2" id="check_adrs_line_2">
+                        </div>
+                        <div>
+                            <label for="city">City <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" name="city" id="check_city">
+                        </div>
+                        <div>
+                            <label for="district">District <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" name="district" id="check_district">
+                        </div>
+                        <div>
+                            <label for="state">State <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" name="state" id="check_state">
+                        </div>
+                        <div>
+                            <label for="country">country <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" name="country" id="check_country">
+                        </div>
+                        <div>
+                            <label for="postal_code">Postal Code <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" name="postal_code" id="check_postal_code">
+                        </div>
+                        <div>
+                            <label for="phone_number">Phone Number <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" name="phone_number" id="check_phone_number">
+                        </div>
+                        <button class="btn btn-primary btn-sm mt-2" style="background: #796aee !important;" type="submit">Use this Address</button>
+                    </form>
+                </div><hr>
+                <div class="box-element">
+                    <h5><strong>OR</strong>, Use this address...</h5>
+                    
+                    <form method="POST" id="change-address-form">
+                        {% for adr in address %}
+                        <div>
+                            <input type="radio" name="address_to_be_added" value="{{adr.id}}">
+                            <label for="address">{{adr.adrs_line_1}}, {{adr.adrs_line_2}}, {{adr.city}}.... Ph. No.: {{adr.phone_number}}</label>
+                        </div>
+                        {% endfor %}
+                        <button class="btn btn-primary btn-sm" type="submit" style="background: #796aee !important;">Use this Address</button>
+                    </form>
+                    
+                </div>
+            </div>
+            <div class="col" id="co-summary">
+                <div class="box-element">
+                    <a href="{% url 'cart' %}" class="btn btn-outline-dark">&#x2190; Back to Cart</a>
+
+                    <table class="table mt-3">
+                        <tr>
+                            <th><h5>Items: <strong>{{order.get_cart_items}}</strong></h5></th>
+                            <th><h5>Total: <strong>&#8377; {{order.get_cart_total}}</strong></h5></th>
+                            <th>
+                                <button
+                                    class="btn btn-success btn-sm"
+                                    style="float: right; margin:5px; background: #796aee !important;"
+                                    data-order-id="{{order.id}}"
+                                    data-total-amount="{{order.get_cart_total}}"
+                                    id="co-make-payment"
+                                    disabled
+                                >
+                                    Make Payment
+                                </button>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+                <br>
+                <div class="box-element">
+                    <div class="table-responsive">
+                        <h3>Order Summary</h3>
+                    <hr>
+                        <table class="table mb-0 table-striped table-hover text-center">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Price/Item</th>
+                                <th>Discounted Price</th>
+                                <th>Image</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <th scope="row">{{forloop.counter}}</th>
+                                <td><a href="{% url 'product_detail_page' item.product.id %}">{{item.get_short_name}}</a></td>
+                                <td>&#8377; {{item.product.price}}</td>
+                                <td>&#8377; {{item.product.discounted_price}}</td>
+                                <td>
+                                    <a href="{{item.product.product_image.url}}" target="_blank">
+                                        <img src="{{item.product.product_image.url}}" style="width: 30px; height: 30px;" alt="{{item.product.product_name}}">
+                                    </a>
+                                </td>
+                                <td>{{item.quantity}}</td>
+                                <td>&#8377; {{item.get_total}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+    <script>
+        element = document.getElementById('add-address-form');
+        url = "/add_order_address/";
+        element.addEventListener('submit', (event) => {
+            event.preventDefault();
+            adrs_line_1 = document.getElementById('check_adrs_line_1').value;
+            adrs_line_2 = document.getElementById('check_adrs_line_2').value;
+            city = document.getElementById('check_city').value;
+            district = document.getElementById('check_district').value;
+            state = document.getElementById('check_state').value;
+            country = document.getElementById('check_country').value;
+            postal_code = document.getElementById('check_postal_code').value;
+            phone_number = document.getElementById('check_phone_number').value;
+
+            data = JSON.stringify({
+                'adrs_line_1': adrs_line_1,
+                'adrs_line_2': adrs_line_2,
+                'city': city,
+                'district': district,
+                'state': state,
+                'country': country,
+                'postal_code': postal_code,
+                'phone_number': phone_number
+            })
+            fetch(url,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data
+            })
+            .then((res) => {
+                    return res.json();
+            })
+            .then((data) => {
+                console.log('Form Submited!');
+                window.location.reload();
+                alert('Response: ' + data);
+            })
+        })
+
+        form_two = document.getElementById('change-address-form');
+        form_two.addEventListener('submit', (event) => {
+            event.preventDefault();
+            payload = {
+                'addressId': null,
+                'success': false
+            };
+            addresses = document.getElementsByName('address_to_be_added');
+            for(var i=0; i<addresses.length; i++){
+                if(addresses[i].checked){
+                    payload['addressId'] = addresses[i].value;
+                    payload['success'] = true;
+                }
+            }
+            data = JSON.stringify(payload);
+            url = '/change_order_address/';
+            fetch(url,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data
+            })
+            .then((res) => {
+                    return res.json();
+            })
+            .then((data) => {
+                console.log('Form Submited!');
+                window.location.reload();
+                alert('Response: ' + data);
+            })
+        })
+    </script>
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function(){
+            $('#change-address-btn').click((event) => {
+                event.preventDefault();
+                $('#co-address').removeAttr('hidden');
+                $('#co-summary').removeClass('col');
+                $('#co-summary').addClass('col-lg-6');
+            });
+
+            var user = "{{request.user}}";
+            if(user!=='AnonymousUser'){
+                $('#co-make-payment').removeAttr('disabled')
+            }
+
+            $('#co-make-payment').click((event) => {
+                var url = '/process_order/';
+                var order_id = $('#co-make-payment').data('order-id');
+                var total_amount = $('#co-make-payment').data('total-amount');
+                var data = JSON.stringify({
+                    'order_id': order_id,
+                    'total_amount': total_amount
+                })
+                if("{{order.address}}" === "None"){
+                    alert('Please add or select an address.');
+                }else {
+                    $.ajax({
+                        type: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        url: url,
+                        data: data,
+                        success: function(data){
+                            alert(data);
+                            window.location.href = "{% url 'your_orders' %}"
+                        },
+                        error: function(e){
+                            alert(e);
+                        }
+                    })
+                }
+            });
+        });
+    </script>
+  </body>
+</html>

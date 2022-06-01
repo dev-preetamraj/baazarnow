@@ -1,0 +1,56 @@
+{% extends 'supplier/base.html' %}
+{% load static %}
+{% block supplier_title %}{% endblock %}
+{% block supplier %}
+<header class="bg-white shadow-sm px-4 py-3 z-index-20">
+    <div class="container-fluid px-0">
+        <h2 class="mb-0 p-1">Manage Products</h2>
+    </div>
+</header>
+<!-- Breadcrumb-->
+<div class="bg-white">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 py-3">
+                <li class="breadcrumb-item"><a class="fw-light" href="{% url 'supplier_index' %}">Home</a></li>
+                <li class="breadcrumb-item active fw-light" aria-current="page">Manage Products</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<section class="manage_products">
+    <div class="container-fluid">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table mb-0 table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Category</th>
+                        <th>Add Product</th>
+                        <th>View Products</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>All Products</td>
+                        <td>
+                            <a href="{% url 'add_product' %}" class="btn btn-primary btn-sm">Add Product 
+                                <i class="bi bi-plus-circle"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'view_products' %}" class="btn btn-primary btn-sm">View Products 
+                                <i class="bi bi-arrow-right-circle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

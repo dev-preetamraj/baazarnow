@@ -1,0 +1,248 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}ISTP/Accounts - Home{% endblock %}
+{% block style %}
+<style>
+  .card {
+    padding: 5px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 10px;
+    width: 15rem;
+    align-items: center;
+  }
+  .rating-div {
+    background: #2f333e;
+    color: #fff;
+    padding: 3px 10px 3px 10px;
+    border-radius: 15px;
+    width: 95px;
+  }
+  .card:hover {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  }
+  .filter-input {
+    width: 80%;
+  }
+  @media screen and (min-width: 600px) {
+    .filter-input {
+      width: 320px;
+    }
+    .card {
+      width: 20rem;
+    }
+  }
+  .supplier-name {
+    display: flex;
+    justify-content: space-between;
+  }
+  .h-line {
+    height: 4px;
+    background: #796aee;
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 30px;
+  }
+</style>
+{% endblock %}
+{% block content %}
+{% if request.user.is_authenticated and not request.user.profile.is_email_verified %}
+<style>
+  .email-verify {
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+  .email-verify h4 {
+    color: rgb(201, 22, 22);
+  }
+  .email-verify .edit-email {
+    background-color: #796aee !important;
+  }
+  .email-verify span {
+    font-weight: 600;
+    margin-inline: 5px;
+  }
+</style>
+<div class="email-verify">
+  <h4>Verify email to access full feature...</h4>
+  <a class="btn btn-danger" href="{% url 'initiate_email_verification' %}">Click here to verify email!</a>
+  <span>OR</span>
+  <a class="btn btn-primary edit-email" href="{% url 'edit_email_view' %}">Edit Email</a>
+</div> <hr>
+{% endif %}
+<div class="container mt-3">
+    {% if search_query != None %}
+    <div class="search-div mt-3 mb-3">
+      <h4>Supplier having the product: {{search_query}}</h4>
+      <div class="h-line"></div>
+    </div>
+    {% else %}
+    <div class="search-div mt-3 mb-3">
+      <h4>Some of the top <span style="color: #796aee;">Rated</span> Suppliers.</h4>
+      <div class="h-line"></div>
+    </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-8">
+        <div class="row">
+          {% for supplier in suppliers %}
+            <div class="col mb-3">
+              <div class="card mb-3">
+                  <img src="{{supplier.profile_pic.url}}" style="width: 200px; height: 200px; border-radius: 50%;" class="card-img-top" alt="Profile Picture">
+                  <div class="card-body">
+                    <div class="supplier-name">
+                      <h5 class="card-title">{{supplier.user.first_name}} {{supplier.user.last_name}}</h5>
+                      <span>
+                        <a href="{% url 'supplier_profile' supplier.id %}">
+                          <img src="{% static 'img/visit_profile.png' %}" alt="Visit">
+                        </a>
+                      </span>
+                    </div>
+                    <h6 class="card-title">{{supplier.adrs_line_1}} | {{supplier.city}}, {{supplier.state}}</h6>
+                    <div class="rating-div">
+                      {% if supplier.rating != None %}
+                      <span class="rating-label">Rating: {{supplier.rating}}</span>
+                      {% else %}
+                      <span class="rating-label">Rating: 0</span>
+                      {% endif %}
+                    </div><hr>
+                    <p class="card-text"><span style="font-weight: 600;">Member since: </span>{{supplier.created_at}}</p>
+                    <p class="card-text"><span style="font-weight: 600;">Total Products: </span>{{supplier.get_product_count}}</p>
+                    <a href="{% url 'supplier_profile' supplier.id %}" class="btn btn-primary" style="background-color: #796aee;">Place order</a>
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'give_rating' supplier.user.pk %}" class="btn btn-primary" style="background-color: #796aee;">Give Rating</a>
+                    {% endif %}
+                  </div>
+                </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% if supplier_count > 12 %}
+          <div class="d-flex flex-column m-auto pagination mt-5" style="align-items: center;">
+              <nav aria-level="Page navigation">
+                  <ul class="pagination pg-grey justify-content-center">
+                      {% if suppliers.has_previous %}
+                      <li class="page-item">
+                          <a href="?{% if query %}q={{query}}&{% endif %}page={{suppliers.previous_page_number}}" class="page-link">&laquo; Previous</a>
+                      </li>
+                      {% endif %}
+
+                      {% for i in suppliers.paginator.page_range %}
+                          {% if suppliers.number == i %}
+                              <li class="page-item active"><a href="" class="page-link">{{i}}</a></li>
+                          {% else %}
+                              <li class="page-item">
+                                  <a href="?{% if query %}q={{query}}&{% endif %}page={{i}}" class="page-link">{{i}}</a>
+                              </li>
+                          {% endif %}
+                      {% endfor %}
+
+                      {% if suppliers.has_next %}
+                      <li class="page-item">
+                          <a href="?{% if query %}q={{query}}&{% endif %}page={{suppliers.next_page_number}}" class="page-link">Next</a>
+                      </li>
+                      <li class="page-item">
+                          <a href="?{% if query %}q={{query}}&{% endif %}page={{suppliers.paginator.num_pages}}" class="page-link">Last &raquo;</a>
+                      </li>
+                      {% endif %}
+                  </ul>
+              </nav>
+          </div>
+        {% endif %}
+      </div>
+      <div class="col-4 mb-3">
+        <h3>Search the best.</h3>
+        <form method="GET" class="form-group">
+          {{my_filter.form.as_p}}
+          <button class="btn btn-primary" style="background-color: #796aee;" type="submit">Filter</button>
+        </form>
+      </div>
+    </div>
+    <div class="search-div mt-3 mb-3">
+      <h4>Some of the <span style="color: #796aee;">Recently</span> added Products.</h4>
+      <div class="h-line"></div>
+    </div>
+    <div class="row">
+      {% for item in products %}
+      <div class="col">
+        <div class="card mb-3">
+          <img src="{{item.product_image.url}}" style="width: 200px; height: 200px;" class="card-img-top" alt="Product Picture">
+          <div class="card-body">
+            <div class="supplier-name d-flex flex-column">
+              <h6 class="card-title">{{item.get_short_name}}</h6>
+              {% if item.quantity == 0 %}
+              <span style="color: red;">Out of stock</span>
+              {% endif %}
+            </div>
+            <h6 class="card-title">Owner: @{{item.product_owner.username}}</h6>
+            <h6 class="card-title">
+              <span style="color: red;">
+                  Offer for Retailers:
+              </span>
+              {% if item.percent_discount_over_bulk != None %}
+              <span>
+                  Get {{item.percent_discount_over_bulk}}% discount over purchase of {{item.quantity_over_bulk_discount}} products.
+              </span>
+              {% else %}
+              <span>No offers on this item by supplier yet...</span>
+              {% endif %}
+            </h6>
+            <hr>
+            <p class="card-text" style="font-size: 20px;">
+              &#8377; {{item.discounted_price}} 
+              <span style="text-decoration: line-through; font-size: 15px;">
+                &#8377; {{item.price}}
+              </span>
+              <span style="font-size: 17px; margin-left: 5px;">({{ item.get_percentage_discount }}% off)</span>
+            </p>
+            <button
+              class="btn btn-primary update-cart"
+              style="background-color: #796aee;"
+              data-product-id="{{item.id}}"
+              data-action="add"
+              data-item-quantity="{{item.quantity}}"
+            >
+              Add to Cart
+          </button>
+            <a href="{% url 'product_detail_page' item.id %}" class="btn btn-primary" style="background-color: #796aee;">View Product</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+<script>
+  $(document).ready(function(){
+    $('.update-cart').each(function(i){
+      $(this).click((event) => {
+          event.preventDefault();
+          var productId = $(this).data('product-id');
+          var action = $(this).data('action');
+          var quantity = $(this).data('item-quantity');
+          if(quantity === 0){
+            alert('Item is out of stock. Try later.');
+          }else {
+            data = JSON.stringify({
+            'productId': productId,
+            'action': action
+            });
+            $.ajax({
+              type: 'POST',
+              url: '/update_cart/',
+              data: data,
+              success: function(data){
+                  window.location.reload();
+                  alert('Response: ' + data);
+              },
+              error: function(e){
+                  console.log(e);
+              }
+            })
+          }
+      })
+  })
+
+
+  });
+</script>
+{% endblock %}

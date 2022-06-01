@@ -1,0 +1,53 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2f333e;">
+    <a class="navbar-brand" href="{% url 'supplier_index' %}">
+      <img style="width: 200px; height: 50px;" src="{% static 'img/istp_logo.png' %}" alt="ISTP Dashboard">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'supplier_index' %}">Home <span class="sr-only">(current)</span></a>
+        </li>
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'all_products' %}">Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'profile_view' %}">Profile</a>
+        </li>
+        {% endif %}
+      </ul>
+      {% if user.is_authenticated %}
+      <div class="form-inline my-2 my-lg-0">
+        <a href="{% url 'cart' %}" class="btn btn-outline-success my-2 my-sm-0 mr-3"><i class="bi bi-cart-fill"></i>
+          <span class="badge badge-light">{{order.get_cart_items}}</span>
+        </a>
+        <span class="form-control mr-sm-2">Welcome, <span style="font-weight: 700;">{{request.user.username}}</span></span>
+        <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'logout' %}">Logout</a>
+      </div>
+      {% else %}
+      <div class="form-inline my-2 my-lg-0">
+        <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'login' %}">Login/Register</a>
+      </div>
+      {% endif %}
+    </div>
+  </nav>
+
+  {% block script %}
+  <script>
+    elements1 = document.querySelectorAll('.nav-item a')
+    for(var i=0; i<elements1.length; i++){
+      var path = window.location.pathname;
+      if(elements1[i].getAttribute("href").indexOf(path) !== -1){
+        elements1[i].parentNode.className += ' active';
+      }
+    }
+  </script>
+  {% endblock %}

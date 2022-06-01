@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
+        <title>Products | baazarnow.com</title>
+        <style>
+            .card-img {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .search form {
+                max-width: 370px;
+            }
+            .search form input, select {
+                float: right;
+                width: 185px;
+            }
+            .search form button {
+                background: #796aee !important;
+            }
+        </style>
+    </head>
+    <body>
+        {% include 'base/navbar.html' %}
+        <div class="container my-3">
+            <div class="search mb-3">
+                <h3>Search for products.</h3>
+                <form method="GET" class="form-group">
+                  {{my_filter.form.as_p}}
+                  <button class="btn btn-primary btn-block" type="submit">Filter Products</button>
+                </form>
+            </div>
+            <div class="row">
+                {% for item in products %}
+                <!-- <div class="row"> -->
+                    <div class="col-md-4">
+                        <div class="card my-3">
+                            <div class="card-img">
+                                <img src="{{item.product_image.url}}" style="width: 200px; height: 200px;" class="card-img-top" alt="Product Picture">
+                            </div>
+                            <div class="card-body">
+                            <div class="supplier-name d-flex flex-column" >
+                                <h6 class="card-title">{{item.get_short_name}}</h6>
+                                {% if item.quantity == 0 %}
+                                <span style="color: red;">Out of stock</span>
+                                {% endif %}
+                            </div>
+                            <h6 class="card-title">Owner: @{{item.product_owner.username}}</h6>
+                            <h6 class="card-title">
+                                <span style="color: red;">
+                                    Offer for Retailers:
+                                </span>
+                                {% if item.percent_discount_over_bulk != None %}
+                                <span>
+                                    Get {{item.percent_discount_over_bulk}}% discount over purchase of {{item.quantity_over_bulk_discount}} products.
+                                </span>
+                                {% else %}
+                                <span>No offers on this item by supplier yet...</span>
+                                {% endif %}
+                            </h6>
+                            <hr>
+                            <p class="card-text" style="font-size: 20px;">
+                                &#8377; {{item.discounted_price}} 
+                                <span style="text-decoration: line-through; font-size: 15px;">
+                                &#8377; {{item.price}}
+                                </span>
+                                <span style="font-size: 17px; margin-left: 5px;">({{ item.get_percentage_discount }}% off)</span>
+                            </p>
+                            <button
+                                class="btn btn-primary update-cart"
+                                style="background-color: #796aee;"
+                                data-product-id="{{item.id}}"
+                                data-action="add"
+                                data-item-quantity="{{item.quantity}}"
+                            >
+                                Add to Cart
+                            </button>
+                            <a href="{% url 'product_detail_page' item.id %}" class="btn btn-primary" style="background-color: #796aee;">View Product</a>
+                            </div>
+                        </div>
+                    </div>
+                <!-- </div> -->
+                {% endfor %}
+            </div>
+            {% if product_count > 12 %}
+            <div class="d-flex flex-column m-auto pagination mt-5" style="align-items: center;">
+                <nav aria-level="Page navigation">
+                    <ul class="pagination pg-grey justify-content-center">
+                        {% if products.has_previous %}
+                        <li class="page-item">
+                            <a href="?{% if query %}q={{query}}&{% endif %}page={{products.previous_page_number}}" class="page-link">&laquo; Previous</a>
+                        </li>
+                        {% endif %}
+
+                        {% for i in products.paginator.page_range %}
+                            {% if products.number == i %}
+                                <li class="page-item active"><a href="" class="page-link">{{i}}</a></li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a href="?{% if query %}q={{query}}&{% endif %}page={{i}}" class="page-link">{{i}}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if products.has_next %}
+                        <li class="page-item">
+                            <a href="?{% if query %}q={{query}}&{% endif %}page={{products.next_page_number}}" class="page-link">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a href="?{% if query %}q={{query}}&{% endif %}page={{products.paginator.num_pages}}" class="page-link">Last &raquo;</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                $('.update-cart').each(function(i){
+                    $(this).click((event) => {
+                        event.preventDefault();
+                        var productId = $(this).data('product-id');
+                        var action = $(this).data('action');
+                        var quantity = $(this).data('item-quantity');
+                        if(quantity === 0){
+                            alert('Item is out of stock. Try later.');
+                        }else {
+                            data = JSON.stringify({
+                            'productId': productId,
+                            'action': action
+                            });
+                            $.ajax({
+                            type: 'POST',
+                            url: '/update_cart/',
+                            data: data,
+                            success: function(data){
+                                window.location.reload();
+                                alert('Response: ' + data);
+                            },
+                            error: function(e){
+                                console.log(e);
+                            }
+                            })
+                        }
+                    })
+                })
+            });
+        </script>
+    </body>
+</html>

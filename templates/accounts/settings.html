@@ -1,0 +1,235 @@
+{% extends 'base/base.html' %}
+{% block style %}
+<style>
+    body {
+        background: white
+    }
+
+    .form-control:focus {
+        box-shadow: none;
+        border-color: #BA68C8
+    }
+
+    .profile-button {
+        background: rgb(99, 39, 120);
+        box-shadow: none;
+        border: none
+    }
+
+    .profile-button:hover {
+        background: #682773
+    }
+
+    .profile-button:focus {
+        background: #682773;
+        box-shadow: none
+    }
+
+    .profile-button:active {
+        background: #682773;
+        box-shadow: none
+    }
+
+    .back:hover {
+        color: #682773;
+        cursor: pointer
+    }
+
+    .labels {
+        font-size: 11px
+    }
+
+    .add-experience:hover {
+        background: #BA68C8;
+        color: #fff;
+        cursor: pointer;
+        border: solid 1px #BA68C8
+    }
+</style>
+{% endblock %}
+{% block title %}Profile Settings{% endblock %}
+{% block content %}
+<div class="container rounded bg-white mt-5 mb-5">
+    {% if messages %}
+    {% for msg in messages %}
+    <div class="alert alert-{{msg.tags}} alert-dismissible fade show" role="alert">
+        {{msg}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                <img class="rounded-circle mt-5" style="height: 200px; width: 200px;" src="{{user.profile.profile_pic.url}}">
+                <span class="font-weight-bold">{{user.first_name}} {{user.last_name}}</span>
+                <span class="text-black-50">{{user.email}}</span>
+                <hr>
+                <form id="dp_form" method="POST" enctype="multipart/form-data">
+                    <label class="text-black-80">Change Profile Picture</label>
+                    <input type="file" class="form-control-file" id="file_id">
+                    {{form}}
+                    <button disabled="disabled" class="btn btn-primary btn-sm mt-1 profile-button" type="submit" id="upload_btn">Change Photo</button>
+                </form>
+            </div>
+            <div class="progress" style="display: none;" id="progress-bar-div">
+                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"> 0% </div>
+            </div>
+        </div>
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Profile Settings</h4>
+                </div>
+                <form method="POST" action="{% url 'update_profile' %}">
+                    {% csrf_token %}
+                    <div class="row mt-2">
+                        <div class="col-md-12">
+                            <label class="labels">Username <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" placeholder="Username" value="@{{user.username}}" disabled="disabled">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Email <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" placeholder="Email" value="{{user.email}}" disabled="disabled">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">First Name <span style="color: red;">*</span></label>
+                            <input type="text" name="first_name" class="form-control" placeholder="First Name" value="{{user.first_name}}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">Last Name</label>
+                            <input type="text" name="last_name" class="form-control" value="{{user.last_name}}" placeholder="Last Name">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label class="labels">Gender</label>
+                            <input type="text" class="form-control" placeholder="gender" value="{{user.profile.gender}}" disabled="disabled">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Change Gender</label>
+                            <select id="gender" name="gender" class="form-control">
+                                <option selected value="choose">Choose...</option>
+                                <option value="Female">Female</option>
+                                <option value="Male">Male</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Address Line 1 <span style="color: red;">*</span></label>
+                            <input type="text" name="adrs_line_1" class="form-control" placeholder="enter address line 1" value="{{user.profile.adrs_line_1}}" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Address Line 2</label>
+                            <input type="text" name="adrs_line_2" class="form-control" placeholder="enter address line 2" value="{{user.profile.adrs_line_2}}">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">City <span style="color: red;">*</span></label>
+                            <input type="text" required name="city" class="form-control" placeholder="enter city" value="{{user.profile.city}}">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">District <span style="color: red;">*</span></label>
+                            <input type="text" name="district" class="form-control" required placeholder="enter district" value="{{user.profile.district}}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">State <span style="color: red;">*</span></label>
+                            <input type="text" name="state" required class="form-control" placeholder="country" value="{{user.profile.state}}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">Country <span style="color: red;">*</span></label>
+                            <input type="text" name="country" required class="form-control" value="{{user.profile.country}}" placeholder="country">
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label class="labels">Postcode <span style="color: red;">*</span></label>
+                            <input type="text" name="postal_code" required class="form-control" placeholder="enter postal code" value="{{user.profile.postal_code}}">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Mobile Number</label>
+                            <input type="text" name="phone_number" class="form-control" placeholder="enter mobile number" value="{{user.profile.phone_number}}">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Aadhar Number</label>
+                            <input type="text" name="aadhar_number" class="form-control" placeholder="enter aadhar number" value="{{user.profile.aadhar_number}}">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">PAN Number</label>
+                            <input type="text" name="pan_number" class="form-control" placeholder="enter PAN number" value="{{user.profile.pan_number}}">
+                        </div>
+                    </div>
+                    <div class="mt-5 text-center">
+                        <button class="btn btn-primary profile-button" type="submit">Save Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $("#dp_form").on('submit', function(e){
+            e.preventDefault();
+            $("#upload_btn").attr('dissabled', 'dissabled')
+            $("#upload_btn").text("uploading...")
+            var formData = new FormData();
+            var img_file = $("#file_id")[0].files[0];
+            formData.append('image', img_file);
+            $.ajax({
+                xhr: function(){
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function(e){
+                        if(e.lengthComputable){
+                            var percent = Math.round((e.loaded/e.total)*100)
+                            $("#progress-bar").attr('aria-valuenow', percent)
+                            $("#progress-bar").attr('style', "width: "+percent+"%")
+                            $("#progress-bar").text("Uploading..."+percent+"%")
+                        }
+                    });
+                    return xhr;
+                },
+                url: "{% url 'update_profile_pic' %}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(){
+                    alert("Profile photo uploaded successfully");
+                    $("#progress-bar-div").attr('style', 'display: none')
+                    $("#upload_btn").text("uploaded")
+                    location.reload();
+                },
+                error: function(err){
+                    alert("Error: " + err);
+                    location.reload();
+                }
+            })
+        });
+
+        $("#file_id").change(function(){
+            $("#upload_btn").removeAttr('disabled');
+            $("#progress-bar-div").removeAttr('style');
+            var file = $("#file_id")[0].files[0];
+            var file_type = file.type;
+            var file_size = file.size;
+            var match = ['image/jpeg', 'image/jpg', 'image/png']
+            if(!((file_type==match[0]) || (file_type==match[1]) || (file_type==match[2]))){
+                alert("Allowed file type is jpeg/jpg/png only.")
+                $("file_id").val("");
+                $("#upload_btn").attr("disabled", "disabled");
+                return false;
+            }
+            if(file_size>5000000){
+                alert("Allowed file size is upto 4 MB.");
+                $("file_id").val("");
+                $("#upload_btn").attr("disabled", "disabled");
+                return false;
+            }
+        })
+    });
+</script>
+{% endblock %}
